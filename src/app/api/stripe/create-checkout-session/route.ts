@@ -49,6 +49,11 @@ export async function POST(request: NextRequest) {
 
       const totalPrice = nights * pricePerNightNum;
 
+      // Determine the base URL dynamically from the request
+      const protocol = request.headers.get("x-forwarded-proto") || "http";
+      const host = request.headers.get("host") || "localhost:3000";
+      const baseUrl = `${protocol}://${host}`;
+
       // Create Stripe checkout session
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
@@ -71,12 +76,8 @@ export async function POST(request: NextRequest) {
         ],
         mode: "payment",
         locale: "en",
-        success_url: `${
-          process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-        }/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${
-          process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-        }/payment/cancel`,
+        success_url: `${baseUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${baseUrl}/payment/cancel`,
         metadata: {
           roomId: roomId.toString(),
           roomNumber: roomNumber.toString(),
