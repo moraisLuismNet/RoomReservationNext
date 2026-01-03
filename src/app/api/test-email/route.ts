@@ -11,10 +11,6 @@ export async function GET(request: NextRequest) {
     const apiKeyLength = apiKey ? apiKey.length : 0;
     const apiKeyStart = apiKey ? apiKey.substring(0, 5) : "none";
 
-    console.log(
-      `Test Email: Key length ${apiKeyLength}, starts with ${apiKeyStart}`
-    );
-
     const result = await EmailService.sendEmail({
       toEmail: email,
       toName: "Test User",
@@ -26,15 +22,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: result.success,
       details: result,
-      envCheck: {
-        hasKey: !!apiKey,
-        keyLength: apiKeyLength,
-        keyPrefix: apiKeyStart,
-        sender:
-          process.env.BREVO_SENDER_EMAIL ||
-          "default (no-reply@roomreservation.com)",
-        nodeEnv: process.env.NODE_ENV,
-      },
     });
   } catch (error: any) {
     return NextResponse.json(
