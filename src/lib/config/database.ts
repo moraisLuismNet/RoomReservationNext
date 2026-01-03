@@ -12,18 +12,14 @@ import { EmailQueue } from "../entities/EmailQueue";
 
 // Database configuration - PostgreSQL only
 const getDatabaseConfig = (): DataSourceOptions => {
-  console.log(`Database configuration: PostgreSQL`);
+  const isProduction = process.env.NODE_ENV === "production" || process.env.DATABASE_URL;
+  
+  console.log(`Database configuration: ${process.env.DATABASE_URL ? "DATABASE_URL" : "Individual Env Vars"} (SSL: ${isProduction})`);
 
-  return {
+  const config: any = {
     type: "postgres",
-    host: process.env.DB_HOST || "localhost",
-    port: parseInt(process.env.DB_PORT || "5432"),
-    username: process.env.DB_USER || "postgres",
-    password: process.env.DB_PASSWORD || "root",
-    database: process.env.DB_NAME || "room-reservation-db",
-    ssl: false, // Disable SSL as server doesn't support it
     synchronize: true, // Enable synchronize to create tables automatically
-    logging: false as any,
+    logging: false,
     entities: [
       User,
       Room,
@@ -45,8 +41,28 @@ const getDatabaseConfig = (): DataSourceOptions => {
     subscribers: [],
     // Simplified connection settings to avoid hanging
     connectTimeoutMS: 10000, // 10 second connection timeout
-    // Remove complex pooling settings that might cause issues
   };
+
+  if (process.env.DATABASE_URL) {
+    config.url = process.env.DATABASE_URL;
+  } else {
+    config.host = process.env.DB_HOST || "localhost";
+    config.port = parseInt(process.env.DB_PORT || "5432");
+    config.username = process.env.DB_USER || "postgres";
+    config.password = process.env.DB_PASSWORD || "root";
+    config.database = process.env.DB_NAME || "room-reservation-db";
+  }
+
+  // Neon and Vercel often require SSL
+  if (isProduction) {
+    config.ssl = {
+      rejectUnauthorized: false,
+    };
+  } else {
+    config.ssl = false;
+  }
+
+  return config as DataSourceOptions;
 };
 
 export const AppDataSource = new DataSource(getDatabaseConfig());
