@@ -21,8 +21,16 @@ export class EmailService {
       process.env.BREVO_SENDER_EMAIL || "no-reply@roomreservation.com";
     const senderName = "Room Reservation";
 
+    console.log(
+      `[EmailService] Attempting to send email to: ${options.toEmail}`
+    );
+    console.log(`[EmailService] Sender: ${senderEmail}`);
+    console.log(`[EmailService] API Key present: ${!!apiKey}`);
+
     if (!apiKey) {
-      console.warn("BREVO_API_KEY is not set. Email will not be sent.");
+      console.error(
+        "[EmailService] BREVO_API_KEY is missing from environment variables."
+      );
       return { success: false, error: "API Key missing" };
     }
 
@@ -45,15 +53,22 @@ export class EmailService {
       });
 
       const data = await response.json();
+      console.log(`[EmailService] Brevo Status: ${response.status}`);
 
       if (response.ok) {
+        console.log(
+          `[EmailService] Email sent successfully. Message ID: ${data.messageId}`
+        );
         return { success: true, messageId: data.messageId };
       } else {
-        console.error("Brevo API error:", data);
+        console.error(
+          "[EmailService] Brevo API error details:",
+          JSON.stringify(data)
+        );
         return { success: false, error: data };
       }
     } catch (error) {
-      console.error("Failed to send email via Brevo:", error);
+      console.error("[EmailService] Fetch exception:", error);
       return { success: false, error };
     }
   }

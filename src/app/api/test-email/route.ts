@@ -29,7 +29,11 @@ export async function GET(request: NextRequest) {
       envCheck: {
         hasKey: !!apiKey,
         keyLength: apiKeyLength,
-        sender: process.env.BREVO_SENDER_EMAIL,
+        keyPrefix: apiKeyStart,
+        sender:
+          process.env.BREVO_SENDER_EMAIL ||
+          "default (no-reply@roomreservation.com)",
+        nodeEnv: process.env.NODE_ENV,
       },
     });
   } catch (error: any) {
