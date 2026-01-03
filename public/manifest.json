@@ -1,0 +1,29 @@
+{
+  "name": "Room Reservation System",
+  "short_name": "RoomRes",
+  "description": "A modern room reservation system built with Next.js",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/icons/icon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon",
+      "purpose": "any"
+    },
+    {
+      "src": "https://imgur.com/VWlUj2J.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://imgur.com/VWlUj2J.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
